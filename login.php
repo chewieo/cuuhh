@@ -1,31 +1,72 @@
 <?php
-session_start();
-include 'db_connection.php'; // Replace with your actual database connection file
-
+ob_start(); // Start output buffering
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+    require('mysqli_connect.php');
+    
+    // Initialize variables
+    $email = $password = '';
 
-    $query = $conn->prepare("SELECT * FROM users WHERE username = ?");
-    $query->bind_param("s", $username);
-    $query->execute();
-    $result = $query->get_result();
+    // Validate email
+    if (empty($_POST['username'])) {
+        echo '<p class="error">Please input an email address.</p>';
+    } else {
+        $email = mysqli_real_escape_string($dbcon, trim($_POST['username']));
+    }
 
-    if ($result->num_rows === 1) {
-        $user = $result->fetch_assoc();
-        if (password_verify($password, $user['password'])) {
-            $_SESSION['username'] = $user['username'];
-            $_SESSION['user_role'] = $user['role']; // 'admin' or 'user'
-            header("Location: admin.php");
-            exit();
+    // Validate password
+    if (empty($_POST['password'])) {
+        echo '<p class="error">Please input a password.</p>';
+    } else {
+        $password = mysqli_real_escape_string($dbcon, trim($_POST['password']));
+    }
+
+    if ($email && $password) {
+        // Query to retrieve user data
+        $q = "SELECT users_id, fname, user_level, psword FROM users WHERE email = '$email'";
+        $result = mysqli_query($dbcon, $q);
+
+        if ($result && mysqli_num_rows($result) === 1) {
+            $row = mysqli_fetch_assoc($result);
+
+            // Debugging: Verify retrieved values
+            // print_r($row); exit();
+
+            // Verify password
+            if (password_verify($password, $row['psword'])) {
+                if (session_status() === PHP_SESSION_NONE) {
+                    session_start();
+                }
+                $_SESSION['users_id'] = $row['users_id'];
+                $_SESSION['fname'] = $row['fname'];
+                $_SESSION['user_level'] = (int) $row['user_level'];
+
+                // Redirect based on user level
+                if ($_SESSION['user_level'] === 1) {
+                    header('Location: admin.php');
+                } else {
+                    header('Location: members.php');
+                }
+                exit();
+            } else {
+                echo '<p class="error">Incorrect password.</p>';
+            }
         } else {
-            echo "Invalid password.";
+            echo '<p class="error">Email not found. Please register first.</p>';
+        }
+
+        // Free the result set
+        if ($result) {
+            mysqli_free_result($result);
         }
     } else {
-        echo "Invalid username.";
+        echo '<p class="error">Both fields are required.</p>';
     }
+
+    // Close the database connection
+    mysqli_close($dbcon);
 }
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>

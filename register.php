@@ -8,7 +8,7 @@
 <body>
     <div id="constant">
         <?php include('header.php'); ?>
-        <?php include('nav.php'); ?>
+        <?php include('nav_index.php'); ?>
         <?php include('info-col.php'); ?>
         <div id='content'>
             <?php

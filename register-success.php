@@ -10,11 +10,11 @@
 <body>
 	<div id="register">
 		<?php include('header.php');?>
-		<?php include('nav.php');?>
+		<?php include('nav_index.php');?>
 		<?php include('info-col.php');?>
 		<div id='content'>
 			<h2>Registration is Complete</h2>
-			<p> You have completed your registration congratulation! <br> You may now click <a href="index.php"> HERE </a> to go back to the homepage.</p>
+			<p> You have completed your registration congratulation! <br> You may now click <a href="login.php"> HERE </a> to login to your account.</p>
 	</div>
 	<?php include('footer.php'); ?>
 </body>

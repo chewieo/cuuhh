@@ -1,6 +1,6 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
+if (!isset($_SESSION['user_level']) || $_SESSION['user_level'] !== 1) {
     header("Location: login.php");
     exit();
 }
@@ -14,7 +14,7 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
     <title>Admin Dashboard</title>
 </head>
 <body>
-    <?php include 'nav.php'; ?>
+    <?php include 'nav_admin.php'; ?>
 
     <h1>Welcome to the Admin Dashboard</h1>
     <ul>
